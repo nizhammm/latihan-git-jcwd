@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <style>
+      table,
+      td,
+      th {
+        border-collapse: collapse;
+        border: 1px solid black;
+      }
+    </style>
+    <fieldset>
+      <legend>Employee Information</legend>
+      <label for="firstName">First name:</label>
+      <input type="text" id="firstName" name="firstName" />
+
+      <br />
+      <br />
+
+      <label for="lastName">Last name:</label>
+      <input type="text" id="lastName" name="lastName" />
+
+      <br />
+      <br />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" />
+
+      <br />
+      <br />
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" />
+
+      <br />
+      <br />
+
+      <label for="occupation">Occupation</label>
+      <select id="occupation">
+        <option>Software Developer</option>
+        <option>UI/UX</option>
+        <option>Digital Marketer</option>
+        <option>Data Scientist</option>
+      </select>
+
+      <br />
+      <br />
+
+      <button onclick="addData()">Create Data</button>
+    </fieldset>
+
+    <br />
+
+    <fieldset>
+      <legend>Search Employee</legend>
+      <label for="searchName">Employee Name:</label>
+      <input type="text" id="searchName" name="searchName" />
+      <br />
+      <br />
+      <label for="searchOccupation">Occupation</label>
+      <select id="searchOccupation">
+        <option value="">All Occupations</option>
+        <option>Software Developer</option>
+        <option>UI/UX</option>
+        <option>Digital Marketer</option>
+        <option>Data Scientist</option>
+      </select>
+      <br />
+      <br />
+      <button onclick="searchEmployees()">Search Employee</button>
+    </fieldset>
+
+    <br />
+
+    <fieldset>
+      <legend>Sort Employee</legend>
+      <label for="sortOrder">Order</label>
+      <select id="sortOrder">
+        <option>Ascending</option>
+        <option>Descending</option>
+      </select>
+      <br />
+      <br />
+      <button onclick="sortEmployeeByName()">Sort Employee By Name</button>
+      <button onclick="sortEmployeeByAge()">Sort Employee By Age</button>
+      <button onclick="resetSort()">Reset Sort</button>
+    </fieldset>
+
+    <table>
+      <caption>
+        Employee Database
+      </caption>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Occupation</th>
+          <th>Age</th>
+          <th colspan="2">Action</th>
+        </tr>
+      </thead>
+
+      <tbody id="employeeDatabase"></tbody>
+    </table>
+
+    <script>
+      class Employee {
+        constructor(fullName, email, age, occupation) {
+          this.fullName = fullName;
+          this.email = email;
+          this.age = age;
+          this.occupation = occupation;
+        }
+      }
+
+      let employeeDatabase = [
+        new Employee("Agus", "mark@mail.com", 17, "Software Developer"),
+        new Employee("Budi", "steve@mail.com", 21, "Digital Marketer"),
+        new Employee("Caca", "bill@mail.com", 13, "UI/UX"),
+        new Employee("Dodi", "seto@mail.com", 30, "Data Scientist"),
+      ];
+
+      const renderData = (dataToRender = []) => {
+        let htmlResult = "";
+
+        dataToRender.forEach((val, idx) => {
+          htmlResult += `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${val.fullName}</td>
+              <td>${val.email}</td>
+              <td>${val.age}</td>
+              <td>${val.occupation}</td>
+            </tr>
+          `;
+        });
+
+        document.getElementById("employeeDatabase").innerHTML = htmlResult;
+      };
+
+      const addData = () => {
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;
+        const email = document.getElementById("email").value;
+        const age = document.getElementById("age").value;
+        const occupation = document.getElementById("occupation").value;
+
+        const newEmployee = new Employee(
+          `${firstName} ${lastName}`,
+          email,
+          age,
+          occupation
+        );
+
+        employeeDatabase.push(newEmployee);
+
+        renderData(employeeDatabase);
+      };
+
+      renderData(employeeDatabase);
+
+      const searchEmployees = () => {
+        let searchEmployeeNameValue =
+          document.getElementById("searchName").value;
+        let searchEmployeeOccupationValue =
+          document.getElementById("searchOccupation").value;
+
+        let filteredData = employeeDatabase.filter((val) => {
+          return (
+            val.fullName
+              .toLowerCase()
+              .includes(searchEmployeeNameValue.toLowerCase()) &&
+            val.occupation
+              .toLowerCase()
+              .includes(searchEmployeeOccupationValue.toLowerCase())
+          );
+        });
+
+        renderData(filteredData);
+      };
+
+      const sortEmployeeByName = () => {
+        let cloneDatabase = [...employeeDatabase];
+        const sortOrder = document.getElementById("sortOrder").value;
+
+        let sortEmployee = cloneDatabase.sort((a, b) => {
+          let fa = a.fullName.toLowerCase();
+          let fb = b.fullName.toLowerCase();
+
+          if (sortOrder == "Ascending") {
+            if (fa < fb) {
+              return -1;
+            } else if (fa > fb) {
+              return 1;
+            } else {
+              return 0;
+            }
+          } else if (sortOrder == "Descending") {
+            if (fa < fb) {
+              return 1;
+            } else if (fa > fb) {
+              return -1;
+            } else {
+              return 0;
+            }
+          }
+        });
+
+        renderData(sortEmployee);
+      };
+
+      const sortEmployeeByAge = () => {
+        let cloneDatabase = [...employeeDatabase];
+        const sortOrder = document.getElementById("sortOrder").value;
+
+        let sortEmployee = cloneDatabase.sort((a, b) => {
+          if (sortOrder == "Ascending") {
+            return a.age - b.age;
+          } else if (sortOrder == "Descending") {
+            return b.age - a.age;
+          }
+        });
+
+        renderData(sortEmployee);
+      };
+
+      const resetSort = () => {
+        renderData(employeeDatabase);
+      };
+    </script>
+  </body>
+</html>
