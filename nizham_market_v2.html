@@ -152,6 +152,10 @@
 
         document.getElementById("timer").innerHTML = `sisa waktu :10`;
 
+        if (!showTotalPrice) {
+          alert("Anda belum ada barang di cart!");
+        }
+
         let seconds = 10;
         stopwatch = setInterval(() => {
           seconds = parseInt(seconds);
